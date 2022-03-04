@@ -146,26 +146,29 @@ for page_id in page_ids:
     
                     dining[key] = value
                     
-                # Adding dining options to the shop_info document
-                shop_info['Dining'] = dining
-                    
                 try:
                     if takeout_box.find('div', class_ = 'arrange-unit__09f24__rqHTg border-color--default__09f24__NPAKY'):
                         order_yelp = 'True'
                     else:
                         order_yelp = 'False'
-                        
-                    # Adding Ordering Bool to shop_info document
-                    shop_info['Order_Yelp'] = order_yelp
                 except:
                     pass
                     
             except:
                 dining = dict()
+                order_yelp = 'False'
+                
+            # Adding dining options to the shop_info document
+            shop_info['Dining'] = dining
+            
+            # Adding Ordering Bool to shop_info document
+            shop_info['Order_Yelp'] = order_yelp
             
             print (shop_info)
             print('--------------------------------')
             donut_shop.insert(shop_info)
+            
+print("Fetched Basic Details of Top 40 Donut Shops")
             
 # Querying the url saved from MongoDB for all stores
 filter_ = {}
@@ -246,6 +249,8 @@ for key in list(rank_url_dict.keys()):
     # Mapping the new shop data into dict using Shop Rank
     new_info[key] = shop_data
             
+print("Fetched Additional Details of Top 40 Donut Shops")
+
 # Making API call to https://www.positionstack.com to obtain lat, long from a given address
 base_api = "http://api.positionstack.com/v1/forward?access_key=02709fbfcb98604117f8d866ee0c3fdb&query="
 
@@ -270,7 +275,10 @@ for key in new_info.keys():
     
     # Updating the newly fetched information to collection
     donut_shop.update_many({"Rank":str(key)},{"$set": new_info[key]})
-            
+    
+    # Adding a sleep time
+    time.sleep(random.randint(4,6))
+
 # Checking existing index on the collection
 print (donut_shop.index_information())
 
